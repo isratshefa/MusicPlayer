@@ -14,7 +14,7 @@ public class SongAdapter extends ArrayAdapter<SongInfo> {
     private Context songContext;
     private List<SongInfo> songList = new ArrayList<>();
 
-    public SongAdapter(Context context, ArrayList<SongInfo> list) {
+    public SongAdapter(Context context, List<SongInfo> list) {
         super(context, 0 , list);
         songContext = context;
         songList = list;
