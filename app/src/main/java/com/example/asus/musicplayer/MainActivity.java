@@ -2,13 +2,18 @@ package com.example.asus.musicplayer;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +32,42 @@ public class MainActivity extends AppCompatActivity {
 
         List<SongInfo>songList = new ArrayList<>();
         songList = getAllAudioFromDevice(this);
+        final MediaPlayer mediaPlayer = new MediaPlayer();
 
 
         songAdapter = new SongAdapter(this, songList);
         listView.setAdapter(songAdapter);
+
+
+        final List<SongInfo> finalSongList = songList;
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // When clicked perform some action...
+                SongInfo currentSong = finalSongList.get(position);
+                Toast.makeText(MainActivity.this, position + "Playing", Toast.LENGTH_SHORT).show();
+                try {
+
+                    mediaPlayer.setDataSource(currentSong.song_path);
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+                    if (mediaPlayer.isPlaying()) {
+                        Toast.makeText(MainActivity.this, currentSong.song_title, Toast.LENGTH_SHORT).show();
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(MainActivity.this, "Cannot Play Song", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+        try {
+            mediaPlayer.setDataSource(songList.get(0).song_path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<SongInfo> getAllAudioFromDevice(final Context context) {
