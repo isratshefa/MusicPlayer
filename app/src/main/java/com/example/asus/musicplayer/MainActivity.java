@@ -1,6 +1,7 @@
 package com.example.asus.musicplayer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -32,8 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
         List<SongInfo>songList = new ArrayList<>();
         songList = getAllAudioFromDevice(this);
-        final MediaPlayer mediaPlayer = new MediaPlayer();
-
 
         songAdapter = new SongAdapter(this, songList);
         listView.setAdapter(songAdapter);
@@ -45,29 +44,15 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // When clicked perform some action...
                 SongInfo currentSong = finalSongList.get(position);
-                Toast.makeText(MainActivity.this, position + "Playing", Toast.LENGTH_SHORT).show();
-                try {
+                Toast.makeText(MainActivity.this, currentSong.song_title, Toast.LENGTH_SHORT).show();
 
-                    mediaPlayer.setDataSource(currentSong.song_path);
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-                    if (mediaPlayer.isPlaying()) {
-                        Toast.makeText(MainActivity.this, currentSong.song_title, Toast.LENGTH_SHORT).show();
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Toast.makeText(MainActivity.this, "Cannot Play Song", Toast.LENGTH_SHORT).show();
-                }
+                Intent intent = new Intent(MainActivity.this, MusicActivity.class);
+                intent.putExtra("path", currentSong.song_path);
+                intent.putExtra("title", currentSong.song_title);
+                intent.putExtra("artist", currentSong.artist);
+                startActivity(intent);
             }
         });
-
-
-        try {
-            mediaPlayer.setDataSource(songList.get(0).song_path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public List<SongInfo> getAllAudioFromDevice(final Context context) {

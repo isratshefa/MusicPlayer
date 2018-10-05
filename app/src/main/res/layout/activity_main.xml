@@ -6,13 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     android:orientation="vertical"
+    android:background="#b2e9ab"
     >
 
     <ListView
         android:id="@+id/song_list_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:divider="#6e6ee6"
+        android:divider="#9a0418"
+
         android:dividerHeight="2dp">
 
     </ListView>
