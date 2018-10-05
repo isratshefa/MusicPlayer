@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.List;
 
 public class MusicActivity extends AppCompatActivity {
 
@@ -18,17 +19,25 @@ public class MusicActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
 
-        TextView nowPlayingTitle = (TextView) findViewById(R.id.now_playing_title);
-        TextView nowPlayingArtist = (TextView) findViewById(R.id.now_playing_artist);
+        final TextView nowPlayingTitle = (TextView) findViewById(R.id.now_playing_title);
+        final TextView nowPlayingArtist = (TextView) findViewById(R.id.now_playing_artist);
         ImageButton previousButton = (ImageButton) findViewById(R.id.pre_button);
         final ImageButton playPauseButton = (ImageButton) findViewById(R.id.play_pause_button);
         ImageButton nextButton = (ImageButton) findViewById(R.id.next_button);
 
         Intent intent = getIntent();
 
-        String path = intent.getExtras().getString("path");
-        String title = intent.getExtras().getString("title");
-        String artist = intent.getExtras().getString("artist");
+        final int[] index = {intent.getExtras().getInt("index")};
+
+
+        SongList allSongList = SongList.getInstance(this);
+        final List<SongInfo> songList = allSongList.songList;
+        SongInfo currentSong = songList.get(index[0]);
+
+
+        String path = currentSong.song_path;
+        String title = currentSong.song_title;
+        String artist = currentSong.artist;
 
         nowPlayingTitle.setText(title);
         nowPlayingArtist.setText(artist);
@@ -67,6 +76,68 @@ public class MusicActivity extends AppCompatActivity {
             }
         });
 
+        previousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (index[0] == 0)
+                    index[0] = songList.size() - 1;
+                else
+                    index[0]--;
+                if (mediaPlayer.isPlaying())
+                {
+                    mediaPlayer.stop();
+                }
+                mediaPlayer.reset();
+                SongInfo currentSong = songList.get(index[0]);
 
+                String path = currentSong.song_path;
+                String title = currentSong.song_title;
+                String artist = currentSong.artist;
+
+                nowPlayingTitle.setText(title);
+                nowPlayingArtist.setText(artist);
+
+                try {
+                    mediaPlayer.setDataSource(path);
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (index[0] == songList.size() - 1)
+                    index[0] = 0;
+                else
+                    index[0]++;
+                if (mediaPlayer.isPlaying())
+                {
+                    mediaPlayer.stop();
+                }
+                mediaPlayer.reset();
+                SongInfo currentSong = songList.get(index[0]);
+
+                String path = currentSong.song_path;
+                String title = currentSong.song_title;
+                String artist = currentSong.artist;
+
+                nowPlayingTitle.setText(title);
+                nowPlayingArtist.setText(artist);
+
+                try {
+                    mediaPlayer.setDataSource(path);
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
     }
 }

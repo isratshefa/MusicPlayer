@@ -31,8 +31,9 @@ public class MainActivity extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.song_list_id);
 
-        List<SongInfo>songList = new ArrayList<>();
-        songList = getAllAudioFromDevice(this);
+
+        SongList allSongList = SongList.getInstance(this);
+        List<SongInfo> songList = allSongList.songList;
 
         songAdapter = new SongAdapter(this, songList);
         listView.setAdapter(songAdapter);
@@ -47,42 +48,11 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, currentSong.song_title, Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(MainActivity.this, MusicActivity.class);
-                intent.putExtra("path", currentSong.song_path);
-                intent.putExtra("title", currentSong.song_title);
-                intent.putExtra("artist", currentSong.artist);
+                intent.putExtra("index", position);
                 startActivity(intent);
             }
         });
     }
 
-    public List<SongInfo> getAllAudioFromDevice(final Context context) {
 
-        final List<SongInfo> tempAudioList = new ArrayList<>();
-
-        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = {MediaStore.Audio.AudioColumns.DATA, MediaStore.Audio.AudioColumns.ALBUM, MediaStore.Audio.ArtistColumns.ARTIST,};
-        Cursor c = context.getContentResolver().query(uri, projection, null, null, null);
-
-        if (c != null) {
-            while (c.moveToNext()) {
-
-                SongInfo song = new SongInfo();
-                String path = c.getString(0);
-                String album = c.getString(1);
-                String artist = c.getString(2);
-
-                String song_title = path.substring(path.lastIndexOf("/") + 1);
-
-                song.artist = artist;
-                song.song_title = song_title;
-                song.song_path = path;
-                song.album = album;
-
-                tempAudioList.add(song);
-            }
-            c.close();
-        }
-
-        return tempAudioList;
-    }
 }
